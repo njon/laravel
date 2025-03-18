@@ -13,9 +13,10 @@ class GeminiController extends Controller
     public function __construct()
     {
         $this->apiKey = 'AIzaSyAOy35O_6G9FGfbJJr8H09EAJHP-7Fv8EE';
+        $this->promptGuide = 'write midjourney prompt. it should be professional photography, its commercial photography ( dont comment, output only prompt ), for this word/phrase:';
     }
 
-    public function callGeminiFlash(string $prompt): ?array
+    public function callGeminiFlash(string $prompt = 'beach')
     {
         $url = "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=" . urlencode($this->apiKey);
 
@@ -24,7 +25,9 @@ class GeminiController extends Controller
                 [
                     'parts' => [
                         [
-                            'text' => $prompt,
+                            // 'text' => $this->promptGuide . ' ' . $prompt,
+
+                            'text' => 'write midjourney prompt for :' . $prompt . '. Output only 1 prompt and dont add comments'
                         ],
                     ],
                 ],
@@ -52,12 +55,13 @@ class GeminiController extends Controller
             return null;
         }
 
-        return $decodedResult;
+        $textValue = $decodedResult['candidates'][0]['content']['parts'][0]['text'];
+
+        return $textValue;
     }
 
     public function generateContent($prompt)
     {
-        $prompt = 'Hey'; // You can change this to get from request if needed
         $result = $this->callGeminiFlash($prompt);
 
         if ($result !== null) {
@@ -74,12 +78,6 @@ class GeminiController extends Controller
     }
 
     public function genImage($prompt = 'test image')  {
-
-        $items = ImageModel::all();
-        dd($items);
-
-
-
         $data = [
             'prompt' => $prompt
         ];
@@ -141,11 +139,140 @@ class GeminiController extends Controller
 
     public function store()
     {
-        // $item = ImageModel::create(
-        //     [
-        //         'category' => 'ZZZ', 'images' => json_encode(['image1.jpg', 'image2.jpg']), 'image' => 'main_image.jpg'
-        //     ]
-        // );
-        $item = ImageModel::all();
+        $flattenedCategories = [
+            'Holistic Therapies',
+        ];
+
+        $prompt = $this->callGeminiFlash($flattenedCategories[0]);
+
+        $this->genImage($prompt);
+
+
+        // $item = ImageModel::all();
+
+        $flattenedCategories = [
+            'Valentine\'s Gifts for Him',
+            'Valentine\'s Gifts for Her',
+            'Couple\'s Valentine Packages',
+            'Vacation in Athens',
+            'Vacation in Santorini',
+            'Wellness Retreats',
+            'Vacation in Crete',
+            'Seaside Getaways',
+            'Luxury SPA Resorts',
+            'Lakeside Escapes',
+            'Vacation in Rhodes',
+            'City Breaks in Thessaloniki',
+            'Workation Packages',
+            'Vacation in Corfu',
+            'Solo Retreats',
+            'Romantic Getaways for Two',
+            'Historical Castle Stays',
+            'Couples SPA Packages',
+            'Facial Treatments',
+            'Relaxation Massages',
+            'Men\'s Therapies',
+            'Lymphatic Drainage',
+            'Traditional Greek Therapies',
+            'Ayurvedic Massages',
+            'Prenatal Massages',
+            'Medical Massages',
+            'Full-Body Treatments',
+            'SPA Rituals',
+            'Back & Neck Massages',
+            'Scalp Treatments',
+            'Massage Bundles',
+            'Fine Dining Experiences',
+            'Greek Food Tastings',
+            'Cooking Classes',
+            'Gourmet Home Delivery',
+            'Wine & Olive Oil Tastings',
+            'Restaurant Vouchers',
+            'Artisan Desserts',
+            'International Cuisine Nights',
+            'Brunch Specials',
+            'Hot Air Balloon Rides',
+            'Skydiving',
+            'Paragliding',
+            'Gliding Flights',
+            'Scenic Helicopter Tours',
+            'Flight Lessons',
+            'Cinema Nights',
+            'Online Workshops',
+            'Cultural Tours',
+            'Art & Craft Classes',
+            'Photoshoot Sessions',
+            'Perfume Crafting',
+            'Theater & Concerts',
+            'Museum Passes',
+            'Dance/Music Lessons',
+            'Bookstore Gift Cards',
+            'Online Shopping Vouchers',
+            'Magazine Subscriptions',
+            'Go-Karting',
+            'Drifting Experiences',
+            'Driving Lessons',
+            'ATV Adventures',
+            'Tank Rides',
+            'Monster Truck Rallies',
+            'Motorcycle Tours',
+            'Quad Biking',
+            'Jeep Safaris',
+            'Bike & Scooter Rentals',
+            'Supercar Test Drives',
+            'Convertible Cruises',
+            'Custom Packages',
+            'Escape Rooms',
+            'Bowling',
+            'Shooting Ranges',
+            'Rock Climbing',
+            'Horseback Riding',
+            'Martial Arts Sessions',
+            'Theme Park Tickets',
+            'Paintball',
+            'Laser Tag',
+            'Golf Packages',
+            'Board Game Cafés',
+            'Hiking Trips',
+            'VR Experiences',
+            'Porsche Rides',
+            'Lamborghini Drives',
+            'Ferrari Tours',
+            'Tesla Experiences',
+            'Water Parks',
+            'Pool & Sauna Access',
+            'Fishing Trips',
+            'Scuba Diving',
+            'Sailing & Yacht Charters',
+            'Flyboarding',
+            'Jet Skiing',
+            'Water Trampolines',
+            'Kayaking',
+            'Paddleboarding',
+            'Surfing Lessons',
+            'Boat & Water Bike Rentals',
+            'Other Water Activities',
+            'Skincare Treatments',
+            'Beauty Packages',
+            'Manicure & Pedicure',
+            'Men\'s Grooming',
+            'Health Checkups',
+            'Professional Makeup',
+            'Hair Treatments',
+            'Body Sculpting',
+            'Beauty Workshops',
+            'Teeth Whitening',
+            'Vacation in Italy',
+            'Vacation in Turkey',
+            'Vacation in Cyprus',
+            'Other Destinations',
+            'Blood Tests',
+            'Dental Care',
+            'Detox Programs',
+            'Float Therapy',
+            'Yoga & Meditation Retreats',
+            'Holistic Therapies',
+        ];
+        
     }
 }
