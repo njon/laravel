@@ -36,7 +36,7 @@
                                  src="{{ asset($user->image) }}"  alt="User Image" style="max-height: 200px; object-fit: cover;">
                             <div class="card-body p-4">
                                 <h3 class="m-0 mb-1">
-                                    <a href="{{ route('users.show', $user->id) }}">{{ $user->name }}</a> </h3>
+                                    <a href="{{ route('users.edit', $user->id) }}">{{ $user->name }}</a> </h3>
                                 <div class="mt-2">
                                     <p class="text-secondary m-0">{{ $user->job_title }}</p> </div>
                             </div>
@@ -96,4 +96,5 @@
         </div>
     </div>
 </div>
+
 @endsection

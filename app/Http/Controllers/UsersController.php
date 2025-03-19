@@ -106,4 +106,39 @@ class UsersController extends Controller
         $user->delete();
         return redirect()->route('users.index')->with('success', 'User deleted successfully.'); // Redirect with success message
     }
+
+    public function uploadAvatar(Request $request, $id)
+    {
+        $request->validate([
+            'avatar' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048',
+        ]);
+
+        $user = User::findOrFail($id);
+
+        // Store the uploaded file
+        $path = $request->file('avatar')->store('avatars', 'public');
+
+        // Update user's avatar URL
+        $user->image = '/storage/' . $path;
+        $user->save();
+
+        return response()->json(['message' => 'Avatar uploaded successfully!', 'path' => $user->image]);
+    }
+
+    public function deleteAvatar($id)
+    {
+        $user = User::findOrFail($id);
+
+        // Delete the avatar file
+        if ($user->image) {
+            $filePath = public_path($user->image);
+            if (file_exists($filePath)) {
+                unlink($filePath);
+            }
+            $user->image = null;
+            $user->save();
+        }
+
+        return response()->json(['message' => 'Avatar deleted successfully!']);
+    }
 }

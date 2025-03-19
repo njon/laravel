@@ -2,7 +2,7 @@
 
 @section('content')
     <div class="page-wrapper">
-        @include('partials.page_header', ['title' => 'Edit User'])
+        @include('partials.page_header', ['asset' => 'user', ])
         <div class="page-body">
             <div class="container-xl">
                 <div class="row row-cards">
@@ -20,7 +20,7 @@
                                                     autocomplete="off">
                                                     <div class="dz-message">
                                                         <span class="avatar avatar-xl"
-                                                            style="background-image: url({{ $user->avatar_url }})"></span>
+                                                            style="background-image: url({{ $user->image }})"></span>
                                                     </div>
                                                 </form>
                                             </div>
@@ -36,9 +36,52 @@
                                             </div>
                                         </div>
                                         <script>
-                                            document.addEventListener("DOMContentLoaded", function() {
-                                                new Dropzone("#dropzone-main")
-                                            })
+                                            document.addEventListener("DOMContentLoaded", function () {
+                                                // Initialize Dropzone
+                                                const dropzone = new Dropzone("#dropzone-main", {
+                                                    // url: "{{ route('users.uploadAvatar', $user->id) }}", // Replace with your upload route
+                                                    url: 'https://humble-doodle-rr54477gg7hxp6-8000.app.github.dev/users/1/upload-avatar',
+                                                    method: "POST",
+                                                    headers: {
+                                                        "X-CSRF-TOKEN": "{{ csrf_token() }}" // Include CSRF token for Laravel
+                                                    },
+                                                    paramName: "avatar", // The name of the file input field
+                                                    maxFiles: 1, // Allow only one file
+                                                    acceptedFiles: "image/*", // Accept only images
+                                                    addRemoveLinks: true, // Allow removing files
+                                                    dictDefaultMessage: "Drag and drop an image here or click to upload",
+                                                    success: function (file, response) {
+                                                        // Handle success response
+                                                        console.log("File uploaded successfully:", response);
+                                                        alert("Avatar updated successfully!");
+                                                    },
+                                                    error: function (file, response) {
+                                                        // Handle error response
+                                                        console.error("Error uploading file:", response);
+                                                        alert("Failed to upload avatar. Please try again.");
+                                                    }
+                                                });
+
+                                                // Optional: Remove file from server when deleted in Dropzone
+                                                dropzone.on("removedfile", function (file) {
+                                                    // Make an AJAX request to delete the file
+                                                    fetch("{{ route('users.deleteAvatar', $user->id) }}", {
+                                                        method: "DELETE",
+                                                        headers: {
+                                                            "X-CSRF-TOKEN": "{{ csrf_token() }}",
+                                                            "Content-Type": "application/json"
+                                                        },
+                                                        body: JSON.stringify({ filename: file.name })
+                                                    })
+                                                        .then(response => response.json())
+                                                        .then(data => {
+                                                            console.log("File deleted successfully:", data);
+                                                        })
+                                                        .catch(error => {
+                                                            console.error("Error deleting file:", error);
+                                                        });
+                                                });
+                                            });
                                         </script>
                                     </div>
                                 </div>
@@ -198,20 +241,4 @@
             </div>
         </div>
     </div>
-    <script>
-        document.addEventListener("DOMContentLoaded", function() {
-            const forms = document.querySelectorAll('form');
-            const newDomain = 'https://humble-doodle-rr54477gg7hxp6-8000.app.github.dev';
-
-            forms.forEach(form => {
-                const action = form.getAttribute('action');
-                console.log(action);
-                if (action) {
-                    const url = new URL(action);
-                    url.hostname = newDomain.replace(/^https?:\/\//, '');
-                    form.setAttribute('action', url.toString());
-                }
-            });
-        });
-    </script>
 @endsection

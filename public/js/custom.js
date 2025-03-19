@@ -162,3 +162,35 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 });
+
+document.addEventListener("DOMContentLoaded", function() {
+    const forms = document.querySelectorAll('form');
+    const newDomain = 'humble-doodle-rr54477gg7hxp6-8000.app.github.dev';
+
+    forms.forEach(form => {
+        const action = form.getAttribute('action');
+        if (action) {
+            const url = new URL(action);
+            url.protocol = 'https:'; // Ensure HTTPS
+            url.hostname = newDomain; // Set the new domain
+            url.port = ''; // Remove the port (e.g., :8000)
+            form.setAttribute('action', url.toString());
+            console.log(url);
+        }
+    });
+});
+document.addEventListener("DOMContentLoaded", function() {
+    const links = document.querySelectorAll('a');
+    const newDomain = 'humble-doodle-rr54477gg7hxp6-8000.app.github.dev';
+
+    links.forEach(link => {
+        const href = link.getAttribute('href');
+        if (href && href.startsWith('http')) { // Ensure it's an absolute URL
+            const url = new URL(href);
+            url.protocol = 'https:'; // Ensure HTTPS
+            url.hostname = newDomain; // Set the new domain
+            url.port = ''; // Remove the port (e.g., :8000)
+            link.setAttribute('href', url.toString());
+        }
+    });
+});

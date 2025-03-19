@@ -2,7 +2,7 @@
 
 @section('content')
     <div class="page-wrapper">
-        @include('partials.page_header', ['title' => 'Add User'])
+        @include('partials.page_header', ['asset' => 'user'])
         <div class="page-body">
             <div class="container-xl">
                 <div class="row row-cards">

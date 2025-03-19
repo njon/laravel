@@ -94,4 +94,54 @@ class StoresController extends Controller
         $store->delete();
         return redirect()->route('stores.index')->with('success', 'Store deleted successfully.');
     }
+
+    public function uploadImage(Request $request)
+    {
+        $request->validate([
+            'image' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048',
+        ]);
+
+        $path = $request->file('image')->store('store-images', 'public');
+        return response()->json(['path' => $path, 'message' => 'Image uploaded successfully!']);
+    }
+
+    public function deleteImage(Request $request)
+    {
+        $filename = $request->input('filename');
+        $path = public_path('storage/store-images/' . $filename);
+
+        if (file_exists($path)) {
+            unlink($path);
+            return response()->json(['message' => 'Image deleted successfully!']);
+        }
+
+        return response()->json(['message' => 'Image not found!'], 404);
+    }
+
+    public function uploadGallery(Request $request)
+    {
+        $request->validate([
+            'gallery.*' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048',
+        ]);
+
+        $paths = [];
+        foreach ($request->file('gallery') as $file) {
+            $paths[] = $file->store('store-gallery', 'public');
+        }
+
+        return response()->json(['paths' => $paths, 'message' => 'Gallery images uploaded successfully!']);
+    }
+
+    public function deleteGallery(Request $request)
+    {
+        $filename = $request->input('filename');
+        $path = public_path('storage/store-gallery/' . $filename);
+
+        if (file_exists($path)) {
+            unlink($path);
+            return response()->json(['message' => 'Gallery image deleted successfully!']);
+        }
+
+        return response()->json(['message' => 'Gallery image not found!'], 404);
+    }
 }
