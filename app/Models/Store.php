@@ -21,8 +21,7 @@ class Store extends Model
         'business_address',
         'website',
         'description',
-        'working_hours',
-        'user_id',
+        'working_hours'
     ];
 
     /**
@@ -41,4 +40,6 @@ class Store extends Model
     {
         return $this->belongsTo(User::class);
     }
+
+
 }

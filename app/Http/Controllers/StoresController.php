@@ -38,11 +38,14 @@ class StoresController extends Controller
             'website' => 'nullable|url',
             'description' => 'nullable|string',
             'working_hours' => 'nullable|json',
-            'user_id' => 'required|exists:users,id', // Ensure user_id exists in users table
         ]);
 
-        // Create a new store
-        Store::create($request->all());
+        // Add the authenticated user's ID to the request data
+        $data = $request->all();
+        $data['user_id'] = 1;
+
+        // Create a new service
+        Store::create($data);
 
         return redirect()->route('stores.index')->with('success', 'Store created successfully.');
     }
@@ -77,7 +80,6 @@ class StoresController extends Controller
             'website' => 'nullable|url',
             'description' => 'nullable|string',
             'working_hours' => 'nullable|json',
-            'user_id' => 'required|exists:users,id',
         ]);
 
         // Update the store

@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Service; // Assuming you have a Service model
 use Illuminate\Http\Request;
 
 class ServicesController extends Controller
@@ -12,7 +11,6 @@ class ServicesController extends Controller
      */
     public function index()
     {
-        $services = Service::all();
         return view('services.index', compact('services'));
     }
 
@@ -29,19 +27,14 @@ class ServicesController extends Controller
      */
     public function store(Request $request)
     {
-        // Validate the request data
-        $request->validate([
-            'service_title' => 'required|string|max:255',
-            'service_description' => 'nullable|string',
-            'service_price' => 'required|numeric|min:0',
-            'length_of_service_minutes' => 'required|integer|min:1',
-            'max_participants' => 'nullable|integer|min:1',
-            'exclusions' => 'nullable|string',
-            'user_id' => 'required|exists:users,id',
-        ]);
+
+        // Add the authenticated user's ID to the request data
+        $data = $request->all();
+        $data['user_id'] = 1;
 
         // Create a new service
-        Service::create($request->all());
+        $service = Service::create($data);
+        $service->stores()->attach($request->stores);
 
         return redirect()->route('services.index')->with('success', 'Service created successfully.');
     }
@@ -75,7 +68,6 @@ class ServicesController extends Controller
             'length_of_service_minutes' => 'required|integer|min:1',
             'max_participants' => 'nullable|integer|min:1',
             'exclusions' => 'nullable|string',
-            'user_id' => 'required|exists:users,id',
         ]);
 
         // Update the service

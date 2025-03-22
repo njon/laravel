@@ -29,6 +29,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
 
 function getWorkingHoursJSON() {
+
     const workingHoursElements = document.querySelectorAll('.working-hours');
     const workingHours = {};
 
@@ -58,94 +59,97 @@ function getWorkingHoursJSON() {
 }
 
 document.addEventListener("DOMContentLoaded", function () {
-    const days = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
     const workingHoursContainer = document.getElementById("working-hours");
+    
+    if(workingHoursContainer) {
+        const days = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
 
-    days.forEach(day => {
-        const dayId = `range-connect-${day.toLowerCase()}`;
+        days.forEach(day => {
+            const dayId = `range-connect-${day.toLowerCase()}`;
 
-        // Create the HTML structure for each day
-        workingHoursContainer.innerHTML += `
-                    <div class="clear mb-5">
-                    <div class="working-hours">
-                    <input class="form-check-input day-checkbox" id="active-day-${day.toLowerCase()}" type="checkbox" checked>
-                    <span class="time-text"> ${day} working hours:
-                       <span class="start-hour-${day.toLowerCase()}">10</span>:<span class="start-minute-${day.toLowerCase()}">00</span>
-                        - <span class="end-hour-${day.toLowerCase()}">22</span>:<span class="end-minute-${day.toLowerCase()}">00</span></span></div>
-                    <div class="form-range mb-2 noUi-target noUi-ltr noUi-horizontal noUi-txt-dir-ltr" id="${dayId}"></div>
-                       
-                    </div>
-                `;
-    });
+            // Create the HTML structure for each day
+            workingHoursContainer.innerHTML += `
+                        <div class="clear mb-5">
+                        <div class="working-hours">
+                        <input class="form-check-input day-checkbox" id="active-day-${day.toLowerCase()}" type="checkbox" checked>
+                        <span class="time-text"> ${day} working hours:
+                        <span class="start-hour-${day.toLowerCase()}">10</span>:<span class="start-minute-${day.toLowerCase()}">00</span>
+                            - <span class="end-hour-${day.toLowerCase()}">22</span>:<span class="end-minute-${day.toLowerCase()}">00</span></span></div>
+                        <div class="form-range mb-2 noUi-target noUi-ltr noUi-horizontal noUi-txt-dir-ltr" id="${dayId}"></div>
+                        
+                        </div>
+                    `;
+        });
 
-    days.forEach(day => {
-        const dayName = day.toLowerCase();
-        const dayId = `range-connect-${dayName.toLowerCase()}`;
-        const startHourDisplay = document.querySelector(`.start-hour-${day.toLowerCase()}`);
-        const startMinuteDisplay = document.querySelector(`.start-minute-${day.toLowerCase()}`);
-        const endHourDisplay = document.querySelector(`.end-hour-${day.toLowerCase()}`);
-        const endMinuteDisplay = document.querySelector(`.end-minute-${day.toLowerCase()}`);
-        const activeCheckbox = document.getElementById(`active-day-${dayName}`);
-        const dayContainer = activeCheckbox.closest('.clear'); //find the parent div
+        days.forEach(day => {
+            const dayName = day.toLowerCase();
+            const dayId = `range-connect-${dayName.toLowerCase()}`;
+            const startHourDisplay = document.querySelector(`.start-hour-${day.toLowerCase()}`);
+            const startMinuteDisplay = document.querySelector(`.start-minute-${day.toLowerCase()}`);
+            const endHourDisplay = document.querySelector(`.end-hour-${day.toLowerCase()}`);
+            const endMinuteDisplay = document.querySelector(`.end-minute-${day.toLowerCase()}`);
+            const activeCheckbox = document.getElementById(`active-day-${dayName}`);
+            const dayContainer = activeCheckbox.closest('.clear'); //find the parent div
 
-        const time = timeObject[dayName];
-        let minutes;
-        if(time && time.disabled){
-            minutes = [10*60, 22*60];
-            activeCheckbox.checked = false;
-        }else if (time){
-            minutes = [time.start, time.end];
-        }else{
-            minutes = [10*60, 22*60];
-        }
-
-        const sliderElement = document.createElement("div");
-        sliderElement.id = dayId;
-        document.getElementById(dayId).appendChild(sliderElement);
-
-        const slider = window.noUiSlider && noUiSlider.create(sliderElement, {
-            start: minutes, // Start in minutes
-            connect: [false, true, false],
-            step: 5, // Step in minutes
-            range: {
-                min: 0,
-                max: 24 * 60 // Max in minutes
+            const time = timeObject[dayName];
+            let minutes;
+            if(time && time.disabled){
+                minutes = [10*60, 22*60];
+                activeCheckbox.checked = false;
+            }else if (time){
+                minutes = [time.start, time.end];
+            }else{
+                minutes = [10*60, 22*60];
             }
-        });
 
-        slider.on('update', function (values, handle) {
-            const startMinutes = parseInt(values[0]);
-            const endMinutes = parseInt(values[1]);
+            const sliderElement = document.createElement("div");
+            sliderElement.id = dayId;
+            document.getElementById(dayId).appendChild(sliderElement);
 
-            const startHour = Math.floor(startMinutes / 60);
-            const startMinute = startMinutes % 60;
-            const endHour = Math.floor(endMinutes / 60);
-            const endMinute = endMinutes % 60;
+            const slider = window.noUiSlider && noUiSlider.create(sliderElement, {
+                start: minutes, // Start in minutes
+                connect: [false, true, false],
+                step: 5, // Step in minutes
+                range: {
+                    min: 0,
+                    max: 24 * 60 // Max in minutes
+                }
+            });
 
-            startHourDisplay.textContent = String(startHour).padStart(2, '0');
-            startMinuteDisplay.textContent = String(startMinute).padStart(2, '0');
-            endHourDisplay.textContent = String(endHour).padStart(2, '0');
-            endMinuteDisplay.textContent = String(endMinute).padStart(2, '0');
-            document.getElementById('working-hours-json').value = getWorkingHoursJSON();
-        });
+            slider.on('update', function (values, handle) {
+                const startMinutes = parseInt(values[0]);
+                const endMinutes = parseInt(values[1]);
 
-        // Add event listener to the checkbox
-        activeCheckbox.addEventListener('change', function () {
-            if (this.checked) {
-                dayContainer.classList.remove('disabled-day');
-                slider.enable();
-            } else {
+                const startHour = Math.floor(startMinutes / 60);
+                const startMinute = startMinutes % 60;
+                const endHour = Math.floor(endMinutes / 60);
+                const endMinute = endMinutes % 60;
+
+                startHourDisplay.textContent = String(startHour).padStart(2, '0');
+                startMinuteDisplay.textContent = String(startMinute).padStart(2, '0');
+                endHourDisplay.textContent = String(endHour).padStart(2, '0');
+                endMinuteDisplay.textContent = String(endMinute).padStart(2, '0');
+                document.getElementById('working-hours-json').value = getWorkingHoursJSON();
+            });
+
+            // Add event listener to the checkbox
+            activeCheckbox.addEventListener('change', function () {
+                if (this.checked) {
+                    dayContainer.classList.remove('disabled-day');
+                    slider.enable();
+                } else {
+                    dayContainer.classList.add('disabled-day');
+                    slider.disable();
+                }
+                document.getElementById('working-hours-json').value = getWorkingHoursJSON();
+            });
+            //Initial State
+            if(!activeCheckbox.checked){
                 dayContainer.classList.add('disabled-day');
                 slider.disable();
             }
-            document.getElementById('working-hours-json').value = getWorkingHoursJSON();
         });
-        //Initial State
-        if(!activeCheckbox.checked){
-            dayContainer.classList.add('disabled-day');
-            slider.disable();
-        }
-    });
+    }
 });
 
 document.addEventListener('DOMContentLoaded', function() {
@@ -193,4 +197,48 @@ document.addEventListener("DOMContentLoaded", function() {
             link.setAttribute('href', url.toString());
         }
     });
+});
+
+document.getElementById('add-avatar')?.addEventListener('click', function() {
+    document.getElementById('dropzone-main')?.click();
+});
+
+document.addEventListener("DOMContentLoaded", function () {
+    // Enhanced Category Selector
+    const categorySelector = document.getElementById('select-categories');
+    if (categorySelector) {
+        new TomSelect('#select-categories', {
+            plugins: {
+                remove_button: {
+                    title: 'Remove this item',
+                }
+            },
+            create: true,
+            searchField: 'text',
+            persist: true,
+            maxItems: 10,
+            render: {
+                item: function (data) {
+                    return '<div class="bg-muted-lt me-1 ">' + data.text + '</div>';
+                },
+                option: function (data) {
+                    return '<div>' + data.text + '</div>';
+                }
+            }
+        });
+    }
+
+    // Location Selector
+    const locationSelector = document.getElementById('select-locations');
+    if (locationSelector) {
+        new TomSelect('#select-locations', {
+            plugins: ['remove_button'],
+            maxItems: 99,
+            render: {
+                item: function (data) {
+                    return '<div class="bg-muted-lt me-1 ">' + data.text + '</div>';
+                }
+            }
+        });
+    }
 });

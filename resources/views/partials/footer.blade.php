@@ -1,8 +1,4 @@
-<script>
-    document.getElementById('add-avatar').addEventListener('click', function() {
-        document.getElementById('dropzone-main').click();
-    });
-</script>
+<script src="{{ asset('./libs/tom-select/dist/js/tom-select.complete.min.js') }}" defer></script>
 <script src="{{ asset('./libs/tinymce/tinymce.min.js?1738448791') }}" defer></script>
 <script src="{{ asset('./js/demo-theme.min.js?1738096684') }}"></script>
 <script src="{{ asset('./libs/nouislider/dist/nouislider.min.js?1738096684') }}" defer></script>
